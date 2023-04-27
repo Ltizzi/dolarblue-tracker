@@ -4,8 +4,13 @@
   "description": "tracker de dolar blue con grafico de velas",
   "main": "index.js",
   "scripts": {
+    "server": "npm run watch --prefix API",
+    "web": "npm run dev --prefix web",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ltizzi",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
 }
