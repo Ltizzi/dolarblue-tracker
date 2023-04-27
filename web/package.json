@@ -1,11 +1,21 @@
 {
-  "name": "dolarblue-tracker-web",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "name": "dolarblue-tracker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "author": "ltizzi",
-  "license": "ISC"
+  "dependencies": {
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.3.2"
+  }
 }
