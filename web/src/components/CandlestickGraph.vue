@@ -32,8 +32,17 @@
       fontSize: "14px",
     },
     title: {
-      text: "CandleStick Chart - Category X-axis",
+      text: "Dolar Blue Tracker",
       align: "left",
+    },
+    toolbar: {
+      tools: {
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: false,
+        reset: false,
+      },
     },
     annotations: {
       xaxis: [
@@ -82,11 +91,6 @@
   async function getBlueValues() {
     const response = await axios.get(`${API_URL}blue/all`);
     console.log("response:", response.data);
-    return response.data;
-  }
-
-  async function getLastPrices() {
-    const response = await axios.get(`${API_URL}blue/last`);
     return response.data;
   }
 
