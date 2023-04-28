@@ -26,7 +26,7 @@
   const options = {
     chart: {
       type: "candlestick",
-      height: 400,
+      height: 350,
       width: 600,
       background: "#0f172a",
       fontSize: "14px",
