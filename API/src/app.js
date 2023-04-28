@@ -21,7 +21,7 @@ app.use(morgan("combined"));
 
 app.use(express.json());
 
-app.unsubscribe("/v1", apiRouter);
+app.use("/v1", apiRouter);
 
 setInterval(async () => {
   try {

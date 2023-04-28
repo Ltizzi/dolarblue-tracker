@@ -1,67 +1,128 @@
 <template lang="">
   <div>
-    <canvas ref="canvas"></canvas>
+    <div id="chart">
+      <apexchart :options="options" :series="series"></apexchart>
+    </div>
   </div>
 </template>
 <script setup>
-  import { Chart, registerables } from "chart.js";
+  import axios from "axios";
+  import { API_URL } from "../main";
+  import { ref, onBeforeMount } from "vue";
+  import ApexCharts from "apexcharts";
+  import VueApexCharts from "vue3-apexcharts";
 
-  Chart.register(...registerables);
+  const data = ref([]);
 
-  const data = ref();
+  const rawData = ref();
 
-  const chartOptions = {
-    scales: {
-      x: {
-        type: "time",
-        time: {
-          unit: "day",
-        },
-      },
-      y: {
-        ticks: {
-          callback: function (value, index, values) {
-            return "$" + value;
+  const series = ref([
+    {
+      name: "candle",
+      data: data.value,
+    },
+  ]);
+
+  const options = {
+    chart: {
+      type: "candlestick",
+      height: 400,
+      width: 600,
+      background: "#0f172a",
+      fontSize: "14px",
+    },
+    title: {
+      text: "CandleStick Chart - Category X-axis",
+      align: "left",
+    },
+    annotations: {
+      xaxis: [
+        {
+          x: "Oct 06 14:00",
+          borderColor: "#00E396",
+          label: {
+            borderColor: "#00E396",
+            style: {
+              fontSize: "12px",
+              color: "#fff",
+              background: "#00E396",
+            },
+            orientation: "horizontal",
+            offsetY: 7,
+            text: "Annotation Test",
           },
+        },
+      ],
+    },
+    tooltip: {
+      enabled: true,
+    },
+    xaxis: {
+      type: "datetime",
+      labels: {
+        style: {
+          fontSize: "14px",
+          color: "#0",
         },
       },
     },
-    plugins: {
-      legend: {
-        display: false,
-      },
+    yaxis: {
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            var data = context.dataset.data[context.dataIndex];
-            return (
-              "Apertura: $" + data,
-              i +
-                ", Máximo: $" +
-                data.h +
-                ", Mínimo: $" +
-                data.l +
-                ", Cierre: $" +
-                data.c
-            );
+        enabled: true,
+        labels: {
+          style: {
+            fontSize: "14px",
+            color: "#0",
           },
         },
       },
     },
   };
 
-  const ctx = this.$ref.canvas.getContext("2d");
-  const chart = new Chart(ctx, {
-    type: "candlestick",
-    data: {
-      datasets: [
-        {
-          label: "Dataset 1",
-          data: data,
-        },
-      ],
-    },
-    options: chartOptions,
+  async function getBlueValues() {
+    const response = await axios.get(`${API_URL}blue/all`);
+    console.log("response:", response.data);
+    return response.data;
+  }
+
+  async function getLastPrices() {
+    const response = await axios.get(`${API_URL}blue/last`);
+    return response.data;
+  }
+
+  setInterval(async () => {
+    rawData.value = await getBlueValues();
+    prepareData();
+  }, 1000 * 60 * 30);
+
+  const dataPorIntervalo = {};
+  const INTERVALO = 30 * 60 * 1000;
+
+  function prepareData() {
+    console.log(rawData.value);
+    rawData.value.forEach((value) => {
+      const timeStamp = new Date(value.createdAt).getTime();
+      const intervalo = Math.floor(timeStamp / INTERVALO) * INTERVALO;
+      if (!dataPorIntervalo[intervalo]) {
+        dataPorIntervalo[intervalo] = [];
+      }
+      dataPorIntervalo[intervalo].push(value);
+    });
+
+    for (const intervalo of Object.keys(dataPorIntervalo)) {
+      const objetos = dataPorIntervalo[intervalo];
+      const x = Number(intervalo);
+      const o = objetos[0].sellPrice; //apertura
+      const c = objetos[objetos.length - 1].sellPrice; //cierre
+      const l = Math.min(...objetos.map((obj) => obj.sellPrice)); // mínimo
+      const h = Math.max(...objetos.map((obj) => obj.sellPrice)); //maximo
+      data.value.push({ x: new Date(x), y: [o, h, l, c] });
+    }
+    console.log("data:", data.value);
+  }
+
+  onBeforeMount(async () => {
+    rawData.value = await getBlueValues();
+    prepareData();
   });
 </script>
-<style lang=""></style>

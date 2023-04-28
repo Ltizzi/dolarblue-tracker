@@ -36,7 +36,7 @@ async function getAllPrices(skip, limit) {
 }
 
 async function getLastPrices() {
-  return await blueRepo.findOne().sort("-blueId");
+  return await blueRepo.find().sort("-blueId").limit(2);
 }
 
 module.exports = {
